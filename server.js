@@ -13,7 +13,10 @@ app.use(express.static('public'));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/fitness-tracker", { useNewUrlParser: true });
 
-//const db = require("./models" 
+const db = require("./models");
+
+require("./routes/apiRoutes")(app);
+require("./routes/htmlRoutes")(app);
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
