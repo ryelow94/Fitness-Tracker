@@ -1,24 +1,14 @@
 const db = require("../models");
 const { Workout } = require("../models/workout");
+const express = require("express");
+const router = express.Router()
 
-module.exports = (app) => {
-
-// app.get("/api/workouts", (req, res) => {
-//     db.Workout.find({})
-//       .then(workout => {
-//         res.json(workout);
-//       })
-//       .catch(err => {
-//         res.json(err);
-//       });
-//   });
-
-  app.get("/api/workouts", async (req,res) => {
+  router.get("/api/workouts", async (req,res) => {
     const allWorkouts = await Workout.find().sort({day: 1})
     res.json(allWorkouts)
   })
 
-  app.post("/api/workouts", async (req,res) => {
+  router.post("/api/workouts", async (req,res) => {
    const createdWorkout = await Workout.create(req.body)
    res.json(createdWorkout)
   })
@@ -31,9 +21,9 @@ module.exports = (app) => {
   //   ])
   // })
 
-  app.put("api/workouts/:id", async (req,res) => {
+  router.put("/api/workouts/:id", async (req,res) => {
     Workout.updateOne({ _id: req.params.id }, {$push: {
       exercises:req.body} })
-      res.statusCode(200).end()
+      res.status(200).end()
   })
-}
+module.exports = router
