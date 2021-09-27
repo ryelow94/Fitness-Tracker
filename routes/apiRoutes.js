@@ -1,29 +1,46 @@
 const db = require("../models");
-const { Workout } = require("../models/workout");
+const Workout = require("../models/workout");
 const express = require("express");
-const router = express.Router()
+const router = express.Router();
 
-  router.get("/api/workouts", async (req,res) => {
-    const allWorkouts = await Workout.find().sort({day: 1})
-    res.json(allWorkouts)
-  })
+const getPreviousDate = (offset) => {
+  const date = new Date();
+  date.setDate(date.getDate()-offset);
+  return date;
+}
 
-  router.post("/api/workouts", async (req,res) => {
-   const createdWorkout = await Workout.create(req.body)
-   res.json(createdWorkout)
-  })
+router.get("/api/workouts", async (req, res) => {
+  const allWorkouts = await Workout.find().sort({ day: 1 });
+  res.json(allWorkouts);
+});
 
-  // app.get("/api/workouts/range", async (req, res) => {
-  //   const today = new Date()
-  //   const weekAgo = today.(weekago.setDate()-7);
-  //   Workout.aggregate([
-  //     {$match: {day: {$gt:}}}
-  //   ])
-  // })
+router.post("/api/workouts", async (req, res) => {
+  const createdWorkout = await Workout.create(req.body);
+  res.json(createdWorkout);
+});
 
-  router.put("/api/workouts/:id", async (req,res) => {
-    Workout.updateOne({ _id: req.params.id }, {$push: {
-      exercises:req.body} })
-      res.status(200).end()
-  })
-module.exports = router
+router.get("/api/workouts/range", async (req, res) => {
+  const weekAgo = getPreviousDate(7)
+  const agg = Workout.aggregate([
+    { $match: { day: { $gt: weekAgo } } },
+    {
+      $addFields: { totalDuration: { $sum: "$exercises.duration" } },
+    },
+  ]);
+  res.json(agg)
+});
+
+router.put("/api/workouts/:id", async (req, res) => {
+  const updatedWorkout = await Workout.updateOne(
+    { _id: req.params.id },
+    {
+      $push: {
+        exercises: req.body,
+      },
+    }
+  );
+  console.log(req.body);
+  res.json(updatedWorkout);
+  // res.status(200).end()
+});
+module.exports = router;
