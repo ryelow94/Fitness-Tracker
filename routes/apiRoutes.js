@@ -9,7 +9,7 @@ const getPreviousDate = (offset) => {
   return date;
 }
 
-router.get("/api/workouts", async (req, res) => {
+router.get("/api/workouts", (req, res) => {
   Workout.aggregate([
     {
       $addFields: {
