@@ -3,11 +3,6 @@ const Workout = require("../models/workout");
 const express = require("express");
 const router = express.Router();
 
-const getPreviousDate = (offset) => {
-  const date = new Date();
-  date.setDate(date.getDate()-offset);
-  return date;
-}
 
 router.get("/api/workouts", (req, res) => {
   Workout.aggregate([
