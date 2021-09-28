@@ -10,8 +10,18 @@ const getPreviousDate = (offset) => {
 }
 
 router.get("/api/workouts", async (req, res) => {
-  const allWorkouts = await Workout.find().sort({ day: 1 });
-  res.json(allWorkouts);
+  Workout.aggregate([
+    {
+      $addFields: {
+        totalDuration: {
+          $sum: '$exercises.duration',
+        },
+      },
+    },
+  ])
+  .then((dbWorkouts) => {
+    res.json(dbWorkouts);
+  }).catch((err) => {res.json(err)});
 });
 
 router.post("/api/workouts", async (req, res) => {
@@ -19,15 +29,24 @@ router.post("/api/workouts", async (req, res) => {
   res.json(createdWorkout);
 });
 
-router.get("/api/workouts/range", async (req, res) => {
-  const weekAgo = getPreviousDate(7)
-  const agg = Workout.aggregate([
-    { $match: { day: { $gt: weekAgo } } },
-    {
-      $addFields: { totalDuration: { $sum: "$exercises.duration" } },
+router.get("/api/workouts/range", (req, res) => {
+  Workout.aggregate([
+    { 
+      $addFields: {
+        totalDuration: {
+          $sum: '$exercises.duration',
+        },
+      },
     },
-  ]);
-  res.json(agg)
+  ]).sort({_id: -1})
+    .limit(7)
+    .then((dbWorkouts) => {
+      console.log(dbWorkouts);
+      res.json(dbWorkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    })
 });
 
 router.put("/api/workouts/:id", async (req, res) => {
