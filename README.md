@@ -3,6 +3,8 @@
 ## Description 
 This app allows a user to track their workouts. It allows you to create a new workout as well as continue an existing one. Also, this app saves workout data on a Mongo database. 
 
+![Fitness-Tracker](./Fitness.png)
+
 ## Installation 
 This app requires you to run npm install to get the various required node modules. Use node server.js in the terminal to run the server and view the app at local host 3000. Also, in order to get the seeded data run npm run seed to seed the data.
 
